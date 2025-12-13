@@ -41,6 +41,9 @@ O cálculo da distância entre pontos é baseado na fórmula euclidiana.
 - **Spring Boot Actuator** – Monitoramento e verificação de saúde da aplicação
 - **Integração Actuator + Swagger** – Permite monitorar a saúde da API diretamente pela interface de documentação
 - **H2 DataBase** – Banco de dados utilizado
+- **Tratamento de Exceções** - @RestControllerAdvice
+- **JUnit 5 + Mockito** – Testes Unitarios
+- **Docker** – criação, implantação e gerenciamento de aplicações dentro de contêineres.
 
 ## Requisitos
 
@@ -62,12 +65,34 @@ git hhttps://github.com/bispobr/Spring-java-PontosDeInteresse.git
 3. A documentação da API está acessível através do Link http://localhost:8080/swagger-ui/index.html#/
 4. O endpoint de saúde e métricas do Actuator está acessível através do Link http://localhost:8080/actuator/health
 
+## Como Rodar em um Container (Opcional)
+
+1. Construa o projeto
+
+```bash
+mvn clean package 
+```
+
+2. Gere a Imagem Docker, com o Docker  instalado execute:
+
+
+```bash
+docker build -t gps . 
+```
+
+3. Execute o Container
+
+```bash
+docker run -p 8080:8080 gps
+```
+
+
 ## API Endpoints
 
 API contém os seguinte endpoint :
 
 ```http request
-POST /pontosInteresse - Cadastra um novo POI.
+POST /pontosInteresse/cadastro - Cadastra um novo POI.
 Content-Type: application/json
 
 {
@@ -83,7 +108,7 @@ Content-Type: application/json
 | `y`       | `Long`   | **Obrigatório**. Coordenada y do POI 
 
 ```http request
-PUT /pontosInteresse - Atualiza um POI existente.
+PUT /pontosInteresse/{id} - Atualiza um POI existente.
 Content-Type: application/json
 
 {
@@ -100,11 +125,11 @@ Content-Type: application/json
 
 
 ```http request
-DEL /pontosInteresse/remover/{id} - Remove o POI indicado  
+DEL /pontosInteresse/{id} - Remove o POI indicado  
 ```
 
 ```http request
-GET /pontosInteresse - retorna todos os  Pontos de interesse cadastrados.
+GET /pontosInteresse/listagem - retorna todos os  Pontos de interesse cadastrados.
 
 ```
 ```http request
