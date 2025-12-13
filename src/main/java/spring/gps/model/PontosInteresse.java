@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import spring.gps.dto.PontosInteresseDTO;
 
 @Getter
 @Setter
@@ -21,10 +20,4 @@ public class PontosInteresse {
     private String nome;
     private Long x;
     private Long y;
-
-    public PontosInteresse(PontosInteresseDTO ponto) {
-        this.nome = ponto.nome();
-        this.x = ponto.x();
-        this.y = ponto.y();
-    }
 }
