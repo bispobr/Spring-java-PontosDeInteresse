@@ -1,142 +1,191 @@
 # POI (Pontos de Interesse) API
 
-Esta API  permite o cadastro e a consulta de Pontos de Interesse (POIs), incluindo a busca por proximidade a partir de um ponto de referência definido pelo usuário.
+API REST desenvolvida com Java e Spring Boot para cadastro, atualização, exclusão e consulta de Pontos de Interesse (POIs), incluindo busca por proximidade a partir de uma coordenada de referência.
 
 ## Funcionalidades
 
-- Cadastro de POIs com nome e coordenadas (X, Y).
-- Listagem de todos os POIs cadastrados.
-- Consulta de POIs por proximidade com base em uma distância máxima (d-max).
-- Remoção de um POI.
-- Atualização de um POI.
+- Cadastro de POIs com nome e coordenadas (X, Y)
+- Listagem de POIs cadastrados
+- Consulta de POIs por proximidade
+- Remoção de POIs
+- Atualização de POIs
+- Documentação da API com Swagger/OpenAPI
+- Monitoramento com Spring Boot Actuator
 
 ## Regras de Negócio
 
 ### Cadastro de POIs
 
-Cada Ponto de Interesse (POI)  contem os seguintes atributos obrigatórios:
+Cada Ponto de Interesse possui os seguintes atributos:
 
-- `nome`: string representando o nome do POI.
-- `coordenadaX`: número inteiro não negativo.
-- `coordenadaY`: número inteiro não negativo.
+- `nome`: nome do POI
+- `coordenadaX`: coordenada X, representada por número inteiro não negativo
+- `coordenadaY`: coordenada Y, representada por número inteiro não negativo
 
-As informações são armazenadas de forma persistente em uma base de dados.
+### Consulta por proximidade
 
----
+A consulta requer uma coordenada de referência e uma distância máxima (`dmax`). São retornados os POIs cuja distância até o ponto de referência seja menor ou igual à distância informada.
 
-### Listagem de POIs
-
-- **Listar todos os POIs cadastrados**: retorna todos os registros da base de dados.
-- **Listar POIs por proximidade**:
-  - Requer uma coordenada de referência (`coordenadaX`, `coordenadaY`) e uma distância máxima (`d-max`, em metros).
-  - Retorna todos os POIs cuja distância até o ponto de referência seja **menor ou igual** a `d-max`.
-
-O cálculo da distância entre pontos é baseado na fórmula euclidiana.
+O cálculo da distância entre os pontos utiliza a fórmula euclidiana.
 
 ## Tecnologias Utilizadas
 
-- **Java + Spring Boot** – Framework principal da aplicação
-- **Lombok (@Slf4j)** – Geração de logs
-- **Swagger** – Documentação da API
-- **Spring Boot Actuator** – Monitoramento e verificação de saúde da aplicação
-- **Integração Actuator + Swagger** – Permite monitorar a saúde da API diretamente pela interface de documentação
-- **H2 DataBase** – Banco de dados utilizado
-- **Tratamento de Exceções** - @RestControllerAdvice
-- **JUnit 5 + Mockito** – Testes Unitarios
-- **Docker** – criação, implantação e gerenciamento de aplicações dentro de contêineres.
+- **Java 21**
+- **Spring Boot**
+- **Spring Web**
+- **Spring Data JPA**
+- **H2 Database**
+- **Swagger / OpenAPI**
+- **Spring Boot Actuator**
+- **JUnit 5 + Mockito**
+- **Docker**
+- **Lombok**
 
 ## Requisitos
 
 - Java 21+
 - Maven
+- Docker (opcional)
 
 ## Executando o Projeto
 
-1. Clone o repositório:
+Clone o repositório:
 
 ```bash
-git hhttps://github.com/bispobr/Spring-java-PontosDeInteresse.git
+git clone https://github.com/bispobr/Spring-java-PontosDeInteresse.git
+cd Spring-java-PontosDeInteresse
 ```
 
-## Como usar
-
-1. Inicie a aplicação
-2. A API está acessível através do endereço http://localhost:8080
-3. A documentação da API está acessível através do Link http://localhost:8080/swagger-ui/index.html#/
-4. O endpoint de saúde e métricas do Actuator está acessível através do Link http://localhost:8080/actuator/health
-
-## Como Rodar em um Container (Opcional)
-
-1. Construa o projeto
+Execute a aplicação:
 
 ```bash
-mvn clean package 
+mvn spring-boot:run
 ```
 
-2. Gere a Imagem Docker, com o Docker  instalado execute:
+A API estará disponível em:
 
+```text
+http://localhost:8080
+```
+
+## Swagger / OpenAPI
+
+A documentação da API está disponível em:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+## H2 Console
+
+O console do H2 está habilitado em:
+
+```text
+http://localhost:8080/h2-console
+```
+
+## Actuator
+
+Endpoint de saúde:
+
+```text
+http://localhost:8080/actuator/health
+```
+
+Endpoint de métricas:
+
+```text
+http://localhost:8080/actuator/metrics
+```
+
+## Docker
+
+Para gerar o artefato da aplicação:
 
 ```bash
-docker build -t gps . 
+mvn clean package
 ```
 
-3. Execute o Container
+Para gerar a imagem Docker:
+
+```bash
+docker build -t gps .
+```
+
+Para executar o container:
 
 ```bash
 docker run -p 8080:8080 gps
 ```
 
-
 ## API Endpoints
 
-API contém os seguinte endpoint :
+### Cadastrar POI
 
-```http request
-POST /pontosInteresse/cadastro - Cadastra um novo POI.
+```http
+POST /pontosInteresse/cadastro
 Content-Type: application/json
+```
 
+Exemplo:
+
+```json
 {
-   "nome" : "xxxxxx",
-   "x": 00,
-   "y" : 00
+  "nome": "Restaurante",
+  "x": 10,
+  "y": 20
 }
 ```
-| Parâmetro | Tipo     | Descrição                           |
-|:----------|:---------| :---------------------------------- |
-| `nome`    | `String` | **Obrigatório**. O nome do POI 
-| `x`       | `Long`   | **Obrigatório**.  Coordenada x do POI 
-| `y`       | `Long`   | **Obrigatório**. Coordenada y do POI 
 
-```http request
-PUT /pontosInteresse/{id} - Atualiza um POI existente.
+### Atualizar POI
+
+```http
+PUT /pontosInteresse/{id}
 Content-Type: application/json
+```
 
+Exemplo:
+
+```json
 {
-   "nome" : "xxxxxx",
-   "x": 00,
-   "y" : 00
+  "nome": "Restaurante Atualizado",
+  "x": 15,
+  "y": 25
 }
 ```
-| Parâmetro | Tipo     | Descrição                           |
-|:----------|:---------| :---------------------------------- |
-| `nome`    | `String` | **Obrigatório**. O nome do POI 
-| `x`       | `Long`   | **Obrigatório**.  Coordenada x do POI 
-| `y`       | `Long`   | **Obrigatório**. Coordenada y do POI 
 
+### Remover POI
 
-```http request
-DEL /pontosInteresse/{id} - Remove o POI indicado  
+```http
+DELETE /pontosInteresse/{id}
 ```
 
-```http request
-GET /pontosInteresse/listagem - retorna todos os  Pontos de interesse cadastrados.
+### Listar POIs
 
+```http
+GET /pontosInteresse/listagem
 ```
-```http request
-GET /pontosInteresse/proximos?x={x}&y={y}&dmax={distancia} - retorna os pontos de interesse proximo dos pontos indicados  
+
+### Buscar POIs por proximidade
+
+```http
+GET /pontosInteresse/proximos?x={x}&y={y}&dmax={distancia}
 ```
-| Parâmetro | Tipo     | Descrição                           |
-|:----------|:---------| :---------------------------------- |
-| `x`       | `Long`   | **Obrigatório**.  Coordenada x do POI 
-| `y`       | `Long`   | **Obrigatório**. Coordenada y do POI 
-| `dmax`    | `String` | **Obrigatório**. Distancia maxima 
+
+| Parâmetro | Tipo | Descrição |
+|---|---|---|
+| `x` | `Long` | Coordenada X do ponto de referência |
+| `y` | `Long` | Coordenada Y do ponto de referência |
+| `dmax` | `Long` | Distância máxima considerada na busca |
+
+## Testes
+
+Execute os testes com:
+
+```bash
+mvn test
+```
+
+## Status
+
+Projeto de estudo desenvolvido para praticar desenvolvimento de APIs REST com Spring Boot, persistência com JPA/H2, tratamento de exceções e consultas por proximidade.
